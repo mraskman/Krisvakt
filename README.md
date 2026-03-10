@@ -17,6 +17,16 @@ Appen kombinerar data från sju olika öppna källor och visar ett enkelt **traf
 
 ---
 
+## 🚀 Öppna appen direkt
+
+👉 **[https://mraskman.github.io/Krisvakt](https://mraskman.github.io/Krisvakt)**
+
+Fungerar direkt i webbläsaren — ingen installation krävs. Fungerar på mobil och dator.
+
+Du kan också ladda ner `index.html` och dubbelklicka för att köra den lokalt.
+
+---
+
 ## 📡 Datakällor
 
 | Källa | Data | Nyckel krävs? |
@@ -29,16 +39,6 @@ Appen kombinerar data från sju olika öppna källor och visar ett enkelt **traf
 | [SIPRI](https://sipri.org) | Militärutgifter | Nej (inbyggd data) |
 | [WHO](https://who.int) | Pandemiberedskap | Nej (inbyggd data) |
 | [Bulletin of Atomic Scientists](https://thebulletin.org) | Domedagsklockan | Nej (inbyggd data) |
-
----
-
-## 🚀 Användning
-
-**Alternativ 1 — Direkt i webbläsaren:**
-Ladda ner `index.html` → dubbelklicka → öppnas direkt. Noll installation.
-
-**Alternativ 2 — Via länk:**
-👉 [mraskman.github.io/Krisvakt](https://mraskman.github.io/Krisvakt)
 
 ---
 
