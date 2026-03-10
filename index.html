@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Krisvakt Sverige</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0d1117;font-family:'Inter',sans-serif;color:#e6edf3;min-height:100vh}
+::-webkit-scrollbar{width:6px;background:#0d1117}
+::-webkit-scrollbar-thumb{background:#21262d;border-radius:3px}
+.wrap{max-width:940px;margin:0 auto;padding:24px 16px}
+.topbar{background:#161b22;border-bottom:1px solid #21262d;padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;position:sticky;top:0;z-index:100}
+.logo{font-size:16px;font-weight:800;color:#f0f6fc;display:flex;align-items:center;gap:10px}
+.logo-dot{width:12px;height:12px;border-radius:50%;animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:.6}}
+.btn{cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;border-radius:8px;padding:7px 14px;border:1px solid #30363d;background:#21262d;color:#8b949e;transition:all .15s}
+.btn:hover{background:#30363d;color:#e6edf3}
+.btn.primary{background:#1f6feb;border-color:#1f6feb;color:#fff}
+.btn.primary:hover{background:#388bfd}
+.keybar{background:#161b22;border-bottom:1px solid #21262d;padding:12px 24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.keyinput{background:#0d1117;border:1px solid #30363d;color:#e6edf3;border-radius:8px;padding:8px 12px;font-family:'Inter',sans-serif;font-size:12px;outline:none;width:280px;transition:border-color .2s}
+.keyinput:focus{border-color:#1f6feb}
+
+/* Traffic light */
+.biglight{background:#161b22;border:1px solid #21262d;border-radius:16px;padding:32px 24px;text-align:center;position:relative;overflow:hidden}
+.biglight-glow{position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:240px;height:240px;border-radius:50%;opacity:.10;pointer-events:none}
+.light-emoji{font-size:72px;line-height:1;margin-bottom:12px;display:block}
+.light-label{font-size:28px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+.light-sub{font-size:15px;color:#8b949e;max-width:360px;margin:0 auto;line-height:1.5}
+.score-pill{display:inline-block;margin-top:14px;padding:5px 18px;border-radius:20px;font-size:13px;font-weight:600;border:1px solid}
+.advice{border-radius:12px;padding:20px 22px;margin-top:16px;border:1px solid;font-size:14px;line-height:1.7}
+.advice h3{font-size:14px;font-weight:700;margin-bottom:8px}
+.advice ul{padding-left:18px}
+.advice li{margin-bottom:4px;color:#c9d1d9}
+
+.sec-title{font-size:12px;font-weight:600;color:#484f58;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;margin-top:28px;display:flex;align-items:center;gap:8px}
+.sec-badge{font-size:10px;padding:2px 8px;border-radius:10px;background:#21262d;color:#3fb950;border:1px solid #3fb95030;font-weight:500;text-transform:none;letter-spacing:0}
+
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:580px){.cards,.conflict-grid,.future-grid{grid-template-columns:1fr!important}}
+.card{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:18px;cursor:pointer;transition:all .18s}
+.card:hover{border-color:#30363d;transform:translateY(-2px)}
+.card.active{border-color:#1f6feb!important}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.card-name{font-size:13px;font-weight:600;color:#c9d1d9}
+.card-tag{font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px;letter-spacing:.04em}
+.card-value{font-size:34px;font-weight:800;line-height:1;letter-spacing:-1px;margin-bottom:2px}
+.card-desc{font-size:11px;color:#484f58;margin-bottom:10px}
+.card-meter{height:4px;background:#21262d;border-radius:2px;overflow:hidden;margin-bottom:8px}
+.card-meter-fill{height:100%;border-radius:2px;transition:width .6s ease}
+.card-explain{font-size:11px;color:#6e7681;line-height:1.5}
+.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:#3fb950;margin-right:4px;animation:pulse 2s infinite}
+
+.detail{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:22px;margin-top:4px}
+.detail-stats{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:14px}
+.stat{font-size:12px;color:#484f58}
+.stat span{color:#c9d1d9;font-weight:600}
+.chart-wrap{width:100%;overflow:hidden;border-radius:8px;background:#0d1117;padding:10px 8px 4px}
+
+.conflict-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.conflict-card{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:14px 16px}
+.conflict-header{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.conflict-flag{font-size:22px;line-height:1}
+.conflict-name{font-size:13px;font-weight:600;color:#e6edf3;flex:1}
+.conflict-intensity{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;letter-spacing:.05em}
+.conflict-bar{height:3px;background:#21262d;border-radius:2px;margin-top:8px;overflow:hidden}
+.conflict-bar-fill{height:100%;border-radius:2px}
+
+.timeline{position:relative;padding-left:24px}
+.timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,#f85149,#d29922,#58a6ff,#f0883e,#bc8cff)}
+.tl-event{position:relative;margin-bottom:20px;padding:16px 18px;background:#161b22;border:1px solid #21262d;border-radius:10px}
+.tl-year{font-size:10px;font-weight:700;letter-spacing:.1em;margin-bottom:4px}
+.tl-title{font-size:14px;font-weight:700;color:#e6edf3;margin-bottom:6px}
+.tl-desc{font-size:12px;color:#8b949e;line-height:1.6;margin-bottom:10px}
+.tl-indicators{display:flex;flex-wrap:wrap;gap:6px}
+.tl-ind{font-size:10px;padding:3px 10px;border-radius:6px;font-weight:600}
+.tl-lesson{font-size:11px;padding:8px 12px;border-radius:8px;border-left:3px solid;margin-top:10px;line-height:1.6;color:#c9d1d9}
+
+/* Future */
+.future-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.future-full{grid-column:1/-1}
+
+.doomsday-card{background:#161b22;border:2px solid #f8514940;border-radius:14px;padding:22px;text-align:center;position:relative;overflow:hidden}
+.doomsday-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(248,81,73,.08),transparent 60%);pointer-events:none}
+.clock-face{width:110px;height:110px;border-radius:50%;border:4px solid #f85149;margin:0 auto 14px;position:relative;background:#0d1117;display:flex;align-items:center;justify-content:center;box-shadow:0 0 30px rgba(248,81,73,.2)}
+.clock-hand{position:absolute;bottom:50%;left:50%;width:3px;height:42px;background:#f85149;transform-origin:bottom center;border-radius:2px;box-shadow:0 0 8px #f85149}
+.clock-center{width:8px;height:8px;background:#f8fafc;border-radius:50%;position:absolute}
+.clock-12{position:absolute;top:6px;left:50%;transform:translateX(-50%);font-size:9px;color:#484f58;font-weight:700}
+
+.vdem-card{background:#161b22;border:1px solid #21262d;border-radius:14px;padding:20px}
+.vdem-country{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #21262d}
+.vdem-country:last-child{border-bottom:none}
+.vdem-bar-wrap{width:100px;height:6px;background:#21262d;border-radius:3px;overflow:hidden;flex-shrink:0}
+.vdem-bar{height:100%;border-radius:3px}
+
+.milspend-card{background:#161b22;border:1px solid #21262d;border-radius:14px;padding:20px}
+.milspend-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #21262d}
+.milspend-row:last-child{border-bottom:none}
+.milspend-bar-wrap{flex:1;height:6px;background:#21262d;border-radius:3px;overflow:hidden}
+.milspend-bar{height:100%;border-radius:3px}
+
+.leaders-card{background:#161b22;border:1px solid #21262d;border-radius:14px;padding:20px}
+.leader-row{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #21262d}
+.leader-row:last-child{border-bottom:none}
+.leader-flag{font-size:24px;flex-shrink:0;margin-top:2px}
+.leader-info{flex:1;min-width:0}
+.leader-name{font-size:13px;font-weight:700;color:#e6edf3}
+.leader-role{font-size:11px;color:#484f58;margin-top:1px;margin-bottom:4px}
+.leader-desc{font-size:11px;color:#6e7681;line-height:1.5}
+.leader-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.leader-risk{font-size:10px;font-weight:700;padding:3px 10px;border-radius:6px;letter-spacing:.05em;white-space:nowrap}
+.risk-meter{width:70px;height:5px;background:#21262d;border-radius:3px;overflow:hidden}
+.risk-meter-fill{height:100%;border-radius:3px}
+
+.ai-card{background:#161b22;border:1px solid #21262d;border-radius:14px;padding:20px}
+.ai-risk-item{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid #21262d;align-items:flex-start}
+.ai-risk-item:last-child{border-bottom:none}
+.ai-risk-icon{font-size:26px;flex-shrink:0;line-height:1;margin-top:2px}
+.ai-risk-level{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;margin-bottom:4px;display:inline-block;letter-spacing:.05em}
+
+.election-card{background:#161b22;border:2px solid #006AA720;border-radius:14px;padding:20px;position:relative;overflow:hidden}
+.election-card::before{content:'🇸🇪';position:absolute;right:-10px;top:-10px;font-size:80px;opacity:.06}
+.party-row{display:flex;align-items:center;gap:10px;padding:5px 0}
+.party-bar-wrap{flex:1;height:7px;background:#21262d;border-radius:4px;overflow:hidden}
+.party-bar{height:100%;border-radius:4px}
+.party-name{font-size:12px;color:#c9d1d9;width:110px;flex-shrink:0}
+.party-pct{font-size:12px;font-weight:600;width:32px;text-align:right;flex-shrink:0}
+
+/* FAO Food card */
+.fao-card{background:#161b22;border:2px solid #3fb95030;border-radius:14px;padding:20px;position:relative;overflow:hidden}
+.fao-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(63,185,80,.05),transparent 60%);pointer-events:none}
+.fao-big{font-size:42px;font-weight:800;letter-spacing:-2px;line-height:1}
+.fao-chart{width:100%;height:70px;margin-top:10px}
+.fao-event{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid #21262d;font-size:11px}
+.fao-event:last-child{border-bottom:none}
+
+/* WHO Pandemic card */
+.who-card{background:#161b22;border:2px solid #58a6ff30;border-radius:14px;padding:20px;position:relative;overflow:hidden}
+.who-card::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(88,166,255,.05),transparent 60%);pointer-events:none}
+.who-country{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #21262d}
+.who-country:last-child{border-bottom:none}
+.who-bar-wrap{flex:1;height:6px;background:#21262d;border-radius:3px;overflow:hidden}
+.who-bar{height:100%;border-radius:3px}
+
+.info-box{background:#0d1117;border-radius:8px;padding:12px 14px;border-left:3px solid;font-size:12px;color:#c9d1d9;line-height:1.7;margin-bottom:12px}
+.loading-bar{height:2px;background:linear-gradient(90deg,#1f6feb,#bc8cff,#3fb950,#f85149,#1f6feb);background-size:400%;animation:lb 2s linear infinite;position:fixed;top:0;left:0;right:0;z-index:999;display:none}
+@keyframes lb{0%{background-position:0%}100%{background-position:400%}}
+.fadein{animation:fi .4s ease both}
+@keyframes fi{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.footer{margin-top:32px;padding:20px;text-align:center;font-size:11px;color:#21262d;line-height:1.9;border-top:1px solid #21262d}
+.chip{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600;display:inline-block}
+</style>
+</head>
+<body>
+<div id="loadbar" class="loading-bar"></div>
+<div id="app"></div>
+<script>
+// ─── API helpers ──────────────────────────────────────────────────────────────
+async function fetchFRED(id,key,lim){
+  var r=await fetch('https://api.stlouisfed.org/fred/series/observations?series_id='+id+'&api_key='+key+'&file_type=json&limit='+(lim||60)+'&sort_order=desc');
+  var d=await r.json();
+  if(d.error_message) throw new Error(d.error_message);
+  return d.observations.filter(o=>o.value!=='.').map(o=>({month:o.date,value:parseFloat(o.value)})).reverse();
+}
+async function fetchSCB(){
+  var r=await fetch('https://api.scb.se/OV0104/v1/doris/sv/ssd/START/FM/FM5001/FM5001A/FinTillgSkuld',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({query:[{code:'Balanspost',selection:{filter:'item',values:['6']}},{code:'Sektor',selection:{filter:'item',values:['Hush']}}],response:{format:'json'}})
+  });
+  var d=await r.json();
+  return (d.data||[]).slice(-24).map(r=>({month:r.key[r.key.length-1],value:parseFloat(r.values[0])})).filter(r=>!isNaN(r.value));
+}
+async function fetchUCDP(){
+  var r=await fetch('https://ucdpapi.pcr.uu.se/api/conflicts/24.1?pagesize=20',{headers:{'Accept':'application/json'}});
+  var d=await r.json();
+  return (d.Result||[]).slice(0,12);
+}
+// FAO Food Price Index — open REST API, no key needed
+async function fetchFAO(){
+  // FAO FPMA API for food price index
+  var r=await fetch('https://fpma.fao.org/giews/fpmat4/api/v1/indices?format=json&type=nominal&num=12',{headers:{'Accept':'application/json'}});
+  var d=await r.json();
+  return d;
+}
+
+// ─── Sim fallback data ────────────────────────────────────────────────────────
+function gen(base,vol,len,trend){
+  len=len||24;trend=trend||0;
+  return Array.from({length:len},(_,i)=>({month:(2024+Math.floor(i/12))+'-'+('0'+((i%12)+1)).slice(-2),value:+(base+trend*i+(Math.random()-.5)*vol).toFixed(2)}));
+}
+var FB={
+  vix:gen(18,6,24,.38),yield_curve:gen(1.2,.3,24,-.06),
+  household_debt:gen(165,5,24,.88),credit_gdp:gen(2,3,24,.27),
+  housing:gen(5.2,.4,24,.08),bank_cet1:gen(20,.8,24,-.07),
+  geo_risk:gen(100,30,24,1.5)
+};
+var DEFVAL={vix:27.4,yield_curve:-0.3,household_debt:186,credit_gdp:8.4,housing:7.1,bank_cet1:18.2,geo_risk:142};
+
+// Historical FAO Food Price Index data (real values)
+var FAO_HISTORY=[
+  {year:'2000',value:91},{year:'2002',value:90},{year:'2004',value:112},{year:'2006',value:127},
+  {year:'2007',value:157},{year:'2008',value:201},{year:'2009',value:160},{year:'2010',value:188},
+  {year:'2011',value:229,event:'Arabiska våren 🔴'},{year:'2012',value:213},{year:'2013',value:210},
+  {year:'2014',value:202},{year:'2015',value:164},{year:'2016',value:161},{year:'2017',value:174},
+  {year:'2018',value:168},{year:'2019',value:172},{year:'2020',value:175},
+  {year:'2021',value:196,event:'Post-COVID chock'},{year:'2022',value:258,event:'Ukrainakriget 🔴'},
+  {year:'2023',value:194},{year:'2024',value:127},{year:'2025',value:125}
+];
+
+// WHO Global Health Security Index 2021 (max 100)
+var WHO_DATA=[
+  {flag:'🇺🇸',name:'USA',score:75.9,color:'#3fb950'},
+  {flag:'🇦🇺',name:'Australien',score:71.1,color:'#3fb950'},
+  {flag:'🇫🇮',name:'Finland',score:68.7,color:'#3fb950'},
+  {flag:'🇸🇪',name:'Sverige',score:66.2,color:'#3fb950'},
+  {flag:'🇬🇧',name:'Storbritannien',score:75.2,color:'#3fb950'},
+  {flag:'🇩🇪',name:'Tyskland',score:65.5,color:'#3fb950'},
+  {flag:'🇧🇷',name:'Brasilien',score:53.4,color:'#d29922'},
+  {flag:'🇮🇳',name:'Indien',score:42.8,color:'#d29922'},
+  {flag:'🇨🇳',name:'Kina',score:52.7,color:'#d29922'},
+  {flag:'🇳🇬',name:'Nigeria',score:33.1,color:'#f85149'},
+  {flag:'🇾🇪',name:'Jemen',score:19.2,color:'#f85149'},
+];
+
+var DEFS=[
+  {id:'geo_risk',name:'Geopolitisk risk',emoji:'🌍',unit:'',threshold:150,direction:'up',weight:.15,color:'#f85149',fredId:'GPRC_USA',apiType:'fred',simple:'Mäter oroligheter i världen — krig, Trump-tullar, Putin, konflikter.',goodBad:'Under 100 = lugnt. 100–150 = förhöjd oro. Över 150 = världen är verkligt orolig.'},
+  {id:'vix',name:'Marknadens rädsla',emoji:'😰',unit:'',threshold:30,direction:'up',weight:.15,color:'#d29922',fredId:'VIXCLS',apiType:'fred',simple:'Kallas "rädsloindex". Visar hur nervösa investerare världen över är just nu.',goodBad:'Under 20 = lugnt. 20–30 = oro. Över 30 = panik. Under 2008 nådde det 80.'},
+  {id:'yield_curve',name:'Räntekurva (krisbarometer)',emoji:'📉',unit:'%',threshold:0,direction:'down',weight:.20,color:'#58a6ff',fredId:'T10Y2Y',apiType:'fred',simple:'Har förutspått varje recession sedan 1970-talet.',goodBad:'Positivt (+) = normalt. Negativt (–) = varningssignal.'},
+  {id:'credit_gdp',name:'Skulder i samhället',emoji:'💳',unit:'%',threshold:10,direction:'up',weight:.20,color:'#f0883e',fredId:null,apiType:null,simple:'Mäter om banker och hushåll lånar mer än normalt.',goodBad:'Under 2% = normalt. Över 10% = röd flagga.'},
+  {id:'housing',name:'Bostadspriser vs löner',emoji:'🏠',unit:'x',threshold:7.5,direction:'up',weight:.15,color:'#f85149',fredId:null,apiType:null,simple:'Hur många årslöner kostar en normal bostad?',goodBad:'4–5x = normalt globalt. Sverige ~7x — ett av världens högsta.'},
+  {id:'bank_cet1',name:'Bankernas säkerhetsbuffert',emoji:'🏦',unit:'%',threshold:16,direction:'down',weight:.05,color:'#3fb950',fredId:null,apiType:null,simple:'Hur mycket kapital har svenska banker som buffert?',goodBad:'Över 18% = starka banker. Under 16% = ansträngt.'},
+  {id:'household_debt',name:'Hushållens skuldsättning',emoji:'👨‍👩‍👧',unit:'%',threshold:190,direction:'up',weight:.10,color:'#bc8cff',fredId:null,apiType:'scb',simple:'Hur stor är den genomsnittliga svenska familjens skuld?',goodBad:'Under 150% = normalt. Sverige ~186% — gör oss känsliga för räntehöjningar.'},
+];
+
+var LEADERS=[
+  {flag:'🇺🇸',name:'Donald Trump',role:'President, USA',risk:'HÖG',riskColor:'#f85149',riskBg:'rgba(248,81,73,.15)',pct:78,desc:'Handelstullar mot hela världen, ifrågasätter NATO. Direkt påverkan på svensk export och säkerhet.'},
+  {flag:'🇷🇺',name:'Vladimir Putin',role:'President, Ryssland',risk:'KRITISK',riskColor:'#f85149',riskBg:'rgba(248,81,73,.2)',pct:95,desc:'Pågående krig i Ukraina. Kärnvapenhot som förhandlingskort. Direkt säkerhetshot mot Sverige.'},
+  {flag:'🇨🇳',name:'Xi Jinping',role:'Generalsekreterare, Kina',risk:'HÖG',riskColor:'#f85149',riskBg:'rgba(248,81,73,.15)',pct:72,desc:'Taiwan-frågan eskalerar. Kina är Sveriges 4:e största handelspartner.'},
+  {flag:'🇰🇵',name:'Kim Jong-un',role:'Diktator, Nordkorea',risk:'MEDEL',riskColor:'#d29922',riskBg:'rgba(210,153,34,.12)',pct:60,desc:'Kärnvapenprovokationer. Nära allians med Ryssland skapar ny dynamik.'},
+  {flag:'🇮🇷',name:'Ali Khamenei',role:'Högste ledare, Iran',risk:'MEDEL',riskColor:'#d29922',riskBg:'rgba(210,153,34,.12)',pct:55,desc:'Kärnvapenprogram. Kontrollerar Hormuzsundet — 20% av världens oljeflöde.'},
+  {flag:'🇵🇰',name:'Shehbaz Sharif',role:'Premiärminister, Pakistan',risk:'MEDEL',riskColor:'#d29922',riskBg:'rgba(210,153,34,.12)',pct:50,desc:'Kärnvapenstat med instabil inrikespolitik och spänningar mot Indien.'},
+];
+
+var AI_RISKS=[
+  {icon:'🤖',title:'AI-styrda autonoma vapen',level:'KRITISK',lc:'#f85149',lb:'rgba(248,81,73,.15)',desc:'Drönare och missiler som fattar egna beslut utan mänsklig kontroll. Används redan i Ukraina. Sänker tröskeln för krig dramatiskt.'},
+  {icon:'🚁',title:'Billiga drönare förändrar krig',level:'AKTIV',lc:'#f85149',lb:'rgba(248,81,73,.15)',desc:'En drönare för 500 kr kan förstöra en stridsvagn för 10 miljoner. Sverige har börjat rusta upp drönarförsvar.'},
+  {icon:'💻',title:'Cyberattacker mot samhället',level:'HÖG',lc:'#d29922',lb:'rgba(210,153,34,.12)',desc:'El, vatten, sjukhus och banker är måltavlor. Sverige drabbades av cyberattacker mot Riksdagen och SMHI.'},
+  {icon:'🧠',title:'AI-desinformation & valpåverkan',level:'HÖG',lc:'#d29922',lb:'rgba(210,153,34,.12)',desc:'Deepfakes och AI-genererade nyheter. Direkt hot mot det svenska valet 2026. Ryssland har dokumenterade kampanjer.'},
+  {icon:'⚡',title:'Elektromagnetiska vapen (EMP)',level:'MEDEL',lc:'#58a6ff',lb:'rgba(88,166,255,.12)',desc:'En EMP-attack kan slå ut all elektronik — mobilnät, bilar, sjukhus. Sverige bygger motståndskraft.'},
+  {icon:'🦠',title:'Biologiska vapen + AI',level:'MEDEL',lc:'#58a6ff',lb:'rgba(88,166,255,.12)',desc:'AI kan designa nya patogener snabbare än vi kan utveckla vacciner. Ett av de allvarligaste framtidsriskerna enligt WHO.'},
+];
+
+var VDEM=[
+  {flag:'🇸🇪',name:'Sverige',score:.91,color:'#3fb950',trend:'→'},
+  {flag:'🇩🇪',name:'Tyskland',score:.85,color:'#3fb950',trend:'→'},
+  {flag:'🇺🇸',name:'USA',score:.73,color:'#d29922',trend:'↓'},
+  {flag:'🇵🇱',name:'Polen',score:.62,color:'#d29922',trend:'↑'},
+  {flag:'🇭🇺',name:'Ungern',score:.38,color:'#f85149',trend:'↓'},
+  {flag:'🇹🇷',name:'Turkiet',score:.24,color:'#f85149',trend:'↓'},
+  {flag:'🇷🇺',name:'Ryssland',score:.08,color:'#f85149',trend:'↓'},
+  {flag:'🇨🇳',name:'Kina',score:.06,color:'#f85149',trend:'↓'},
+];
+
+var MIL=[
+  {flag:'🇷🇺',name:'Ryssland',pct:6.8,color:'#f85149',change:'+2.1%'},
+  {flag:'🇵🇱',name:'Polen',pct:4.1,color:'#f0883e',change:'+1.4%'},
+  {flag:'🇺🇸',name:'USA',pct:3.4,color:'#58a6ff',change:'+0.1%'},
+  {flag:'🇸🇪',name:'Sverige',pct:2.1,color:'#3fb950',change:'+0.6%'},
+  {flag:'🇩🇪',name:'Tyskland',pct:2.1,color:'#3fb950',change:'+0.5%'},
+  {flag:'🇨🇳',name:'Kina',pct:1.7,color:'#d29922',change:'+0.2%'},
+];
+
+var ELECTION={
+  date:'13 september 2026',
+  daysLeft:Math.ceil((new Date('2026-09-13')-new Date())/(864e5)),
+  parties:[
+    {name:'Socialdemokraterna',pct:33,color:'#f85149'},{name:'Sverigedemokraterna',pct:20,color:'#f0883e'},
+    {name:'Moderaterna',pct:18,color:'#58a6ff'},{name:'Vänsterpartiet',pct:9,color:'#bc8cff'},
+    {name:'Centerpartiet',pct:6,color:'#3fb950'},{name:'Miljöpartiet',pct:5,color:'#3fb950'},
+    {name:'Kristdemokraterna',pct:4,color:'#58a6ff'},{name:'Liberalerna',pct:4,color:'#d29922'},
+  ]
+};
+
+var KNOWN_CONFLICTS=[
+  {name:'Ukraina – Ryssland',flag:'🇺🇦',intensity:{label:'KRIG',color:'#f85149',bg:'rgba(248,81,73,.15)'},deaths:'500 000+',pct:95,started:'2022'},
+  {name:'Gaza – Israel',flag:'🇮🇱',intensity:{label:'KRIG',color:'#f85149',bg:'rgba(248,81,73,.15)'},deaths:'45 000+',pct:88,started:'2023'},
+  {name:'Sudan',flag:'🇸🇩',intensity:{label:'KRIG',color:'#f85149',bg:'rgba(248,81,73,.15)'},deaths:'20 000+',pct:75,started:'2023'},
+  {name:'Myanmar',flag:'🇲🇲',intensity:{label:'KRIG',color:'#f85149',bg:'rgba(248,81,73,.15)'},deaths:'50 000+',pct:70,started:'2021'},
+  {name:'Kina – Taiwan (spänning)',flag:'🇹🇼',intensity:{label:'SPÄNNING',color:'#d29922',bg:'rgba(210,153,34,.12)'},deaths:'0',pct:40,started:'Pågående'},
+  {name:'Pakistan – Afghanistan',flag:'🇵🇰',intensity:{label:'KONFLIKT',color:'#d29922',bg:'rgba(210,153,34,.12)'},deaths:'1 000+/år',pct:45,started:'Pågående'},
+  {name:'Sahel',flag:'🌍',intensity:{label:'KRIG',color:'#f85149',bg:'rgba(248,81,73,.15)'},deaths:'10 000+',pct:65,started:'2012'},
+  {name:'Yemen',flag:'🇾🇪',intensity:{label:'KRIG',color:'#f85149',bg:'rgba(248,81,73,.15)'},deaths:'150 000+',pct:72,started:'2015'},
+];
+
+var HISTORY=[
+  {year:'2008',color:'#f85149',title:'Den globala finanskrisen',desc:'Bostadsbubblan i USA sprack. Banker kollapsade. Sverige drabbades via export och banksektor.',
+   indicators:[{label:'VIX nådde 80',c:'#f85149'},{label:'Räntekurvan inverterad',c:'#f85149'},{label:'Kredit/BNP +15%',c:'#f85149'},{label:'Matpriser höga',c:'#d29922'}],
+   lesson:'Alla 4 huvudindikatorer blinkade rött INNAN kraschen. 12–18 månaders förvarning hade varit möjlig.',lc:'#f85149'},
+  {year:'2010–2012',color:'#d29922',title:'Eurokrisen + Arabiska våren',desc:'Statsskulder skenade i Europa. FAO:s matprisindex nådde rekord precis innan Arabiska våren. Tunisien, Egypten och Syrien destabiliserades.',
+   indicators:[{label:'FAO matprisindex rekord',c:'#f85149'},{label:'VIX >35',c:'#f85149'},{label:'Kreditspreadar +400%',c:'#f85149'}],
+   lesson:'Matpriser föregick revolutionerna. Hungriga befolkningar är geopolitisk krutdurk — FAO-indexet hade varnat månader innan.',lc:'#d29922'},
+  {year:'2020',color:'#58a6ff',title:'COVID-19 — pandemi & ekonomisk kollaps',desc:'Börser föll 35% på 33 dagar. BNP –8% i Sverige. WHO:s beredskapindex hade visat att världen var underpreppad.',
+   indicators:[{label:'VIX nådde 66',c:'#f85149'},{label:'WHO-index varnat sedan 2019',c:'#d29922'},{label:'BNP –8%',c:'#f85149'}],
+   lesson:'WHO:s Global Health Security Index pekade på sårbarhet INNAN COVID. Länder med höga poäng klarade sig bättre.',lc:'#58a6ff'},
+  {year:'2022',color:'#f0883e',title:'Ukrainakriget + inflationschock',desc:'Ryssland invaderade Ukraina. Mat- och energipriser exploderade. Sverige fick 10% inflation och historiskt snabba räntehöjningar.',
+   indicators:[{label:'Geo-risk +200%',c:'#f85149'},{label:'FAO matpriser +50%',c:'#f85149'},{label:'Inflation 10%',c:'#f85149'},{label:'Bostadspriser –15%',c:'#f85149'}],
+   lesson:'Ukraina är en av världens största spannmålsexportörer. Krig → matpriser → global instabilitet är ett klassiskt mönster.',lc:'#f0883e'},
+  {year:'2025–?',color:'#bc8cff',title:'Handelskrig, AI & nästa okända kris',desc:'Trumps tullar, AI-driven desinformation, drönarkrig och rekordhöga geopolitiska risker. Vad som utlöser nästa kris är okänt.',
+   indicators:[{label:'GPR-index förhöjt',c:'#d29922'},{label:'AI-hot nya',c:'#bc8cff'},{label:'Val 2026',c:'#58a6ff'},{label:'Matpriser normaliserade',c:'#3fb950'}],
+   lesson:'Vi är i ett förhöjt läge. Kombinationen av teknikskifte, geopolitik och höga skulder skapar ovanlig osäkerhet.',lc:'#bc8cff'},
+];
+
+// ─── State ────────────────────────────────────────────────────────────────────
+var S={
+  inds:DEFS.map(d=>Object.assign({},d,{current:DEFVAL[d.id],live:false,history:FB[d.id]})),
+  selected:'geo_risk',loading:{},lastUpdated:null,fredKey:'e1b8685ad6f8a0bde0ce9493df968095',showKey:false,
+  conflicts:[],conflictsLoading:true,
+  faoLatest:127,faoHistory:FAO_HISTORY,faoLive:false,
+  activeTab:'indicators',
+  fredKey:'e1b8685ad6f8a0bde0ce9493df968095'
+};
+
+function calcScore(){
+  var t=0,w=0;
+  S.inds.forEach(i=>{
+    if(i.current==null) return;
+    var r=i.direction==='up'?i.current/i.threshold:(i.threshold===0?(i.current<0?1.5:.3):i.current/i.threshold);
+    t+=Math.min(Math.max(r,0),1.5)/1.5*i.weight; w+=i.weight;
+  });
+  return w===0?50:Math.min(Math.round((t/w)*100),100);
+}
+function level(sc){
+  if(sc>=70) return{emoji:'🔴',label:'Var försiktig',color:'#f85149',bg:'rgba(248,81,73,.08)',border:'rgba(248,81,73,.25)',advice:{title:'Flera varningssignaler lyser rött',points:['Undvik att ta nya stora lån just nu','Ha 2–3 månaders utgifter sparade kontant','Följ Riksbankens räntebesked noga','Diversifiera sparandet — lägg inte allt i en korg']}};
+  if(sc>=45) return{emoji:'🟡',label:'Håll koll',color:'#d29922',bg:'rgba(210,153,34,.08)',border:'rgba(210,153,34,.25)',advice:{title:'Några varningssignaler — bra att vara vaksam',points:['Se över din ekonomiska buffert','Kontrollera att ditt bolån klarar 2% högre ränta','Undvik onödiga stora ekonomiska beslut']}};
+  return{emoji:'🟢',label:'Lugnt läge',color:'#3fb950',bg:'rgba(63,185,80,.08)',border:'rgba(63,185,80,.25)',advice:{title:'Läget ser stabilt ut just nu',points:['Fortsätt spara regelbundet','Bra läge att amortera om du har bolån','Ha ändå en buffert på 1–2 månaders utgifter']}};
+}
+function triggered(ind){if(ind.current==null) return false;return ind.direction==='up'?ind.current>=ind.threshold:ind.current<=ind.threshold;}
+function meterPct(ind){if(ind.current==null) return 0;if(ind.direction==='up') return Math.min((ind.current/ind.threshold)*80,100);if(ind.threshold===0) return ind.current<0?90:30;return Math.min(((ind.threshold-ind.current)/ind.threshold+.5)*60,100);}
+
+// ─── SVG helpers ──────────────────────────────────────────────────────────────
+function spark(data,color,threshold){
+  if(!data||data.length<2) return '';
+  var vals=data.slice(-20).map(d=>d.value);
+  var mos=data.slice(-20).map(d=>d.month||d.year||'');
+  var W=600,H=60,pl=4,pr=4,pt=6,pb=18;
+  var iw=W-pl-pr,ih=H-pt-pb;
+  var mn=Math.min(...vals,threshold)*.94,mx=Math.max(...vals,threshold)*1.06;
+  var xs=i=>pl+i/(vals.length-1)*iw;
+  var ys=v=>pt+ih-((v-mn)/(mx-mn||1))*ih;
+  var pts=vals.map((v,i)=>xs(i)+','+ys(v)).join(' ');
+  var area=pl+','+(pt+ih)+' '+pts+' '+(pl+iw)+','+(pt+ih);
+  var thY=ys(threshold);
+  var uid='g'+Math.random().toString(36).slice(2,7);
+  var labs=mos.map((m,i)=>{if(i%5!==0||!m) return '';return '<text x="'+xs(i)+'" y="'+H+'" fill="#484f58" font-size="8" text-anchor="middle" font-family="sans-serif">'+m.slice(0,7)+'</text>';}).join('');
+  return '<svg width="100%" height="'+H+'" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="display:block;overflow:visible">'
+    +'<defs><linearGradient id="'+uid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+color+'" stop-opacity=".25"/><stop offset="100%" stop-color="'+color+'" stop-opacity=".02"/></linearGradient></defs>'
+    +'<polygon points="'+area+'" fill="url(#'+uid+')"/>'
+    +'<polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
+    +(thY>=pt&&thY<=pt+ih?'<line x1="'+pl+'" y1="'+thY+'" x2="'+(pl+iw)+'" y2="'+thY+'" stroke="'+color+'" stroke-width="1" stroke-dasharray="4,3" opacity=".5"/>':'')
+    +vals.map((v,i)=>i===vals.length-1?'<circle cx="'+xs(i)+'" cy="'+ys(v)+'" r="3.5" fill="'+color+'" stroke="#161b22" stroke-width="1.5"/>':'').join('')
+    +labs+'</svg>';
+}
+
+// FAO chart — larger, with event markers
+function faoChart(data){
+  if(!data||data.length<2) return '';
+  var vals=data.map(d=>d.value);
+  var W=700,H=90,pl=4,pr=4,pt=8,pb=20;
+  var iw=W-pl-pr,ih=H-pt-pb;
+  var mn=Math.min(...vals)*.9,mx=Math.max(...vals)*1.05;
+  var xs=i=>pl+i/(vals.length-1)*iw;
+  var ys=v=>pt+ih-((v-mn)/(mx-mn||1))*ih;
+  var pts=vals.map((v,i)=>xs(i)+','+ys(v)).join(' ');
+  var area=pl+','+(pt+ih)+' '+pts+' '+(pl+iw)+','+(pt+ih);
+  var uid='fao'+Math.random().toString(36).slice(2,7);
+  // Reference line at 115 (pre-crisis baseline)
+  var refY=ys(115);
+  var dots=data.map((d,i)=>{
+    if(!d.event) return '';
+    var cx=xs(i),cy=ys(d.value);
+    return '<circle cx="'+cx+'" cy="'+cy+'" r="5" fill="#f85149" stroke="#161b22" stroke-width="1.5"/>';
+  }).join('');
+  var labs=data.map((d,i)=>{
+    if(i%4!==0) return '';
+    return '<text x="'+xs(i)+'" y="'+H+'" fill="#484f58" font-size="8" text-anchor="middle" font-family="sans-serif">'+d.year+'</text>';
+  }).join('');
+  return '<svg width="100%" height="'+H+'" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" style="display:block;overflow:visible">'
+    +'<defs><linearGradient id="'+uid+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3fb950" stop-opacity=".2"/><stop offset="100%" stop-color="#3fb950" stop-opacity=".02"/></linearGradient></defs>'
+    +'<polygon points="'+area+'" fill="url(#'+uid+')"/>'
+    +'<polyline points="'+pts+'" fill="none" stroke="#3fb950" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>'
+    +(refY>=pt&&refY<=pt+ih?'<line x1="'+pl+'" y1="'+refY+'" x2="'+(pl+iw)+'" y2="'+refY+'" stroke="#484f58" stroke-width="1" stroke-dasharray="3,3"/><text x="'+(pl+4)+'" y="'+(refY-3)+'" fill="#484f58" font-size="8" font-family="sans-serif">normalnivå</text>':'')
+    +dots+labs+'</svg>';
+}
+
+// ─── Section renderers ────────────────────────────────────────────────────────
+function doomsdayHTML(){
+  var ang=90-(89/3600)*360;
+  return '<div class="doomsday-card">'
+    +'<div style="font-size:11px;color:#f85149;font-weight:700;letter-spacing:.1em;margin-bottom:12px">☢ DOMEDAGSKLOCKAN</div>'
+    +'<div class="clock-face"><div class="clock-12">12</div><div class="clock-hand" style="transform:rotate('+ang+'deg)"></div><div class="clock-center"></div></div>'
+    +'<div style="font-size:38px;font-weight:800;color:#f85149;letter-spacing:-1px;line-height:1">89</div>'
+    +'<div style="font-size:11px;color:#f85149;font-weight:600;margin-top:2px">sekunder till midnatt</div>'
+    +'<div style="font-size:11px;color:#6e7681;margin-top:8px;line-height:1.6">Bulletin of Atomic Scientists mäter risken för global katastrof. <strong style="color:#f85149">89 sek är historiskt rekord</strong> sedan klockan grundades 1947.</div>'
+    +'<div style="display:flex;gap:10px;margin-top:10px;justify-content:center;font-size:10px;flex-wrap:wrap">'
+      +'<span style="color:#484f58">1991: <span style="color:#3fb950">17 min</span></span>'
+      +'<span style="color:#484f58">2020: <span style="color:#d29922">100 sek</span></span>'
+      +'<span style="color:#484f58">2023: <span style="color:#f0883e">90 sek</span></span>'
+      +'<span style="color:#484f58">2025: <span style="color:#f85149">89 sek ●</span></span>'
+    +'</div>'
+  +'</div>';
+}
+
+function vdemHTML(){
+  return '<div class="vdem-card">'
+    +'<div style="font-size:11px;color:#3fb950;font-weight:700;letter-spacing:.1em;margin-bottom:4px">🏛 V-DEM DEMOKRATIINDEX</div>'
+    +'<div style="font-size:11px;color:#484f58;margin-bottom:10px">Göteborgs Universitet · 0–100 · ↓ sjunker ↑ stärks</div>'
+    +VDEM.map(c=>{
+      var tc=c.trend==='↓'?'#f85149':c.trend==='↑'?'#3fb950':'#484f58';
+      return '<div class="vdem-country"><span style="font-size:16px;margin-right:4px">'+c.flag+'</span><span style="font-size:12px;color:#c9d1d9;flex:1">'+c.name+'</span><div class="vdem-bar-wrap"><div class="vdem-bar" style="width:'+(c.score*100)+'%;background:'+c.color+'"></div></div><span style="font-size:11px;font-weight:700;color:'+c.color+';width:28px;text-align:right">'+Math.round(c.score*100)+'</span><span style="font-size:13px;color:'+tc+';width:14px;text-align:center">'+c.trend+'</span></div>';
+    }).join('')
+    +'<div style="font-size:10px;color:#21262d;margin-top:8px">Källa: V-Dem Institute, GU 2024</div>'
+  +'</div>';
+}
+
+function milHTML(){
+  return '<div class="milspend-card">'
+    +'<div style="font-size:11px;color:#58a6ff;font-weight:700;letter-spacing:.1em;margin-bottom:4px">⚔ MILITÄRUTGIFTER % AV BNP (SIPRI 2024)</div>'
+    +'<div style="font-size:11px;color:#484f58;margin-bottom:10px">Sverige nådde NATO-målet 2% för första gången 2024</div>'
+    +MIL.map(c=>'<div class="milspend-row"><span style="font-size:18px">'+c.flag+'</span><span style="font-size:12px;color:#c9d1d9;width:70px">'+c.name+'</span><div class="milspend-bar-wrap"><div class="milspend-bar" style="width:'+Math.min(c.pct/7*100,100)+'%;background:'+c.color+'"></div></div><span style="font-size:12px;font-weight:700;color:'+c.color+';width:32px;text-align:right">'+c.pct+'%</span><span style="font-size:10px;color:'+c.color+';width:38px;text-align:right">'+c.change+'</span></div>').join('')
+    +'<div style="font-size:10px;color:#21262d;margin-top:8px">Källa: SIPRI Stockholm 2024</div>'
+  +'</div>';
+}
+
+function leadersHTML(){
+  return '<div class="leaders-card future-full">'
+    +'<div style="font-size:11px;color:#f85149;font-weight:700;letter-spacing:.1em;margin-bottom:4px">👑 OSTABILA LEDARE MED GLOBAL PÅVERKAN</div>'
+    +'<div style="font-size:11px;color:#484f58;margin-bottom:10px">Bedömning baserad på kärnvapeninnehav, utrikespolitik och påverkan på Sverige/NATO</div>'
+    +LEADERS.map(l=>'<div class="leader-row"><span class="leader-flag">'+l.flag+'</span><div class="leader-info"><div class="leader-name">'+l.name+'</div><div class="leader-role">'+l.role+'</div><div class="leader-desc">'+l.desc+'</div></div><div class="leader-right"><span class="leader-risk" style="background:'+l.riskBg+';color:'+l.riskColor+'">'+l.risk+'</span><div class="risk-meter"><div class="risk-meter-fill" style="width:'+l.pct+'%;background:'+l.riskColor+'"></div></div></div></div>').join('')
+  +'</div>';
+}
+
+function aiHTML(){
+  return '<div class="ai-card future-full">'
+    +'<div style="font-size:11px;color:#bc8cff;font-weight:700;letter-spacing:.1em;margin-bottom:4px">🤖 AI, DRÖNARE & NYA HOTVEKTORER</div>'
+    +'<div style="font-size:11px;color:#484f58;margin-bottom:10px">Teknologiska förändringar som radikalt förändrar riskkalkylerna</div>'
+    +AI_RISKS.map(r=>'<div class="ai-risk-item"><span class="ai-risk-icon">'+r.icon+'</span><div><span class="ai-risk-level" style="background:'+r.lb+';color:'+r.lc+'">'+r.level+'</span><div style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:3px">'+r.title+'</div><div style="font-size:12px;color:#8b949e;line-height:1.6">'+r.desc+'</div></div></div>').join('')
+  +'</div>';
+}
+
+function electionHTML(){
+  return '<div class="election-card future-full">'
+    +'<div style="font-size:11px;color:#006AA7;font-weight:700;letter-spacing:.1em;margin-bottom:4px">🇸🇪 SVENSKA VALET 2026</div>'
+    +'<div style="display:flex;gap:20px;align-items:baseline;margin-bottom:12px;flex-wrap:wrap"><span style="font-size:32px;font-weight:800;color:#f0f6fc">'+ELECTION.daysLeft+'</span><span style="font-size:13px;color:#484f58">dagar kvar · Valdagen: '+ELECTION.date+'</span></div>'
+    +ELECTION.parties.map(p=>'<div class="party-row"><span class="party-name">'+p.name+'</span><div class="party-bar-wrap"><div class="party-bar" style="width:'+p.pct+'%;background:'+p.color+'"></div></div><span class="party-pct" style="color:'+p.color+'">'+p.pct+'%</span></div>').join('')
+    +'<div style="margin-top:12px;padding:10px 12px;background:#0d1117;border-radius:8px;border-left:3px solid #f85149;font-size:12px;color:#8b949e;line-height:1.7">'
+      +'⚠ <strong style="color:#c9d1d9">Risker inför valet:</strong> Rysk & kinesisk desinformation är dokumenterad · AI-deepfakes av svenska politiker · Polarisering ökar extrema positioner · Politisk osäkerhet kan tillfälligt påverka SEK'
+    +'</div>'
+    +'<div style="font-size:10px;color:#21262d;margin-top:6px">Opinionsdata: Genomsnitt Sifo/Demoskop/Novus 2025</div>'
+  +'</div>';
+}
+
+// ─── NEW: FAO Food Price Index ────────────────────────────────────────────────
+function faoHTML(){
+  var curr=S.faoLatest;
+  var status=curr>150?{label:'VARNING',color:'#f85149',bg:'rgba(248,81,73,.12)'}:curr>120?{label:'FÖRHÖJT',color:'#d29922',bg:'rgba(210,153,34,.12)'}:{label:'NORMALT',color:'#3fb950',bg:'rgba(63,185,80,.12)'};
+  var crises=FAO_HISTORY.filter(d=>d.event);
+  return '<div class="fao-card future-full">'
+    +'<div style="font-size:11px;color:#3fb950;font-weight:700;letter-spacing:.1em;margin-bottom:4px">🌾 FAO MATPRISINDEX — Världens viktigaste krisindikator</div>'
+    +'<div style="display:flex;align-items:flex-end;gap:20px;margin-bottom:6px;flex-wrap:wrap">'
+      +'<div><div class="fao-big" style="color:'+status.color+'">'+curr+'</div><div style="font-size:11px;color:#484f58;margin-top:2px">Aktuellt index · Basår 2014–2016 = 100'+(S.faoLive?' · <span style="color:#3fb950">● Live FAO</span>':'')+'</div></div>'
+      +'<span class="chip" style="background:'+status.bg+';color:'+status.color+'">'+status.label+'</span>'
+      +'<div style="font-size:11px;color:#484f58;line-height:1.6;max-width:300px">2011: 229 → Arabiska våren<br>2022: 258 → Ukrainakriget (all-time high)</div>'
+    +'</div>'
+    +'<div class="chart-wrap" style="padding:12px 8px 6px">'+faoChart(S.faoHistory)+'<div style="display:flex;align-items:center;gap:8px;margin-top:6px;font-size:10px;color:#484f58"><span style="width:10px;height:10px;border-radius:50%;background:#f85149;display:inline-block;flex-shrink:0"></span>= Krisevent med geopolitisk påverkan</div></div>'
+    +'<div style="margin-top:14px">'
+      +'<div style="font-size:11px;color:#484f58;font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em">Varför matpriser förutspår krig & revolution</div>'
+      +crises.map(c=>'<div class="fao-event"><span style="font-size:16px">🌾</span><span style="font-weight:700;color:#f85149;width:38px;flex-shrink:0">'+c.year+'</span><span style="font-size:11px;color:#e6edf3;flex:1">Index: <strong>'+c.value+'</strong></span><span style="font-size:11px;color:#c9d1d9">'+c.event+'</span></div>').join('')
+    +'</div>'
+    +'<div style="background:#0d1117;border-radius:8px;padding:10px 12px;margin-top:12px;border-left:3px solid #3fb950;font-size:12px;color:#8b949e;line-height:1.7">'
+      +'💡 <strong style="color:#c9d1d9">Varför det spelar roll för dig:</strong> Höga matpriser driver inflation globalt, destabiliserar länder i Afrika och Mellanöstern, skapar flyktingströmmar mot Europa och tvingar centralbanker — inklusive Riksbanken — att höja räntan.'
+    +'</div>'
+    +'<div style="font-size:10px;color:#21262d;margin-top:8px">Källa: FAO Food Price Index — Food and Agriculture Organization of the United Nations</div>'
+  +'</div>';
+}
+
+// ─── NEW: WHO Pandemic Preparedness ──────────────────────────────────────────
+function whoHTML(){
+  var sweScore=WHO_DATA.find(d=>d.name==='Sverige').score;
+  var worldAvg=40.2; // WHO GHS Index 2021 global average
+  return '<div class="who-card future-full">'
+    +'<div style="font-size:11px;color:#58a6ff;font-weight:700;letter-spacing:.1em;margin-bottom:4px">🦠 WHO GLOBAL HEALTH SECURITY INDEX — Pandemiberedskap</div>'
+    +'<div style="display:flex;gap:24px;margin-bottom:14px;flex-wrap:wrap">'
+      +'<div><div style="font-size:38px;font-weight:800;color:#3fb950;letter-spacing:-1px;line-height:1">'+sweScore+'</div><div style="font-size:11px;color:#484f58;margin-top:2px">Sveriges poäng · Max 100</div></div>'
+      +'<div style="display:flex;flex-direction:column;justify-content:center;gap:4px;font-size:12px;">'
+        +'<div style="color:#484f58">Världssnitt: <strong style="color:#d29922">'+worldAvg+'</strong></div>'
+        +'<div style="color:#484f58">Bäst i världen: <strong style="color:#3fb950">75.9 (USA)</strong></div>'
+        +'<div style="color:#484f58">Sämst: <strong style="color:#f85149">19.2 (Jemen)</strong></div>'
+      +'</div>'
+    +'</div>'
+    +'<div style="font-size:11px;color:#484f58;margin-bottom:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em">Beredskapspoäng per land (0–100)</div>'
+    +WHO_DATA.map(c=>{
+      var bar=c.score/100*100;
+      return '<div class="who-country"><span style="font-size:16px;margin-right:4px">'+c.flag+'</span><span style="font-size:12px;color:#c9d1d9;width:100px">'+c.name+'</span><div class="who-bar-wrap"><div class="who-bar" style="width:'+bar+'%;background:'+c.color+'"></div></div><span style="font-size:11px;font-weight:700;color:'+c.color+';width:32px;text-align:right">'+c.score+'</span></div>';
+    }).join('')
+    +'<div style="background:#0d1117;border-radius:8px;padding:10px 12px;margin-top:12px;border-left:3px solid #58a6ff;font-size:12px;color:#8b949e;line-height:1.7">'
+      +'💡 <strong style="color:#c9d1d9">Historisk träffsäkerhet:</strong> WHO:s index pekade 2019 — månader INNAN COVID — på att världen var dåligt förberedd. Globalt snitt 40/100. Sverige klarade sig relativt bra (66p) men hade brister i lagerhållning av skyddsutrustning. Nästa pandemi är inte en fråga om <em>om</em>, utan <em>när</em>.'
+    +'</div>'
+    +'<div style="font-size:10px;color:#21262d;margin-top:8px">Källa: WHO Global Health Security Index 2021 · Nuclear Threat Initiative & Johns Hopkins Center</div>'
+  +'</div>';
+}
+
+// ─── Main render ──────────────────────────────────────────────────────────────
+function render(){
+  var sc=calcScore(),lv=level(sc);
+  var sel=S.inds.find(i=>i.id===S.selected)||S.inds[0];
+  var redCount=S.inds.filter(triggered).length;
+  var t=S.activeTab;
+
+  var cardsHTML=S.inds.map(ind=>{
+    var on=triggered(ind),isSel=S.selected===ind.id,pct=meterPct(ind);
+    return '<div class="card'+(isSel?' active':'')+'" data-id="'+ind.id+'" style="border-color:'+(isSel?'#1f6feb':on?ind.color+'40':'#21262d')+'">'
+      +'<div class="card-top"><div class="card-name">'+ind.emoji+' '+ind.name+'</div><span class="card-tag" style="background:'+(on?ind.color+'22':'#21262d')+';color:'+(on?ind.color:'#484f58')+'">'+(S.loading[ind.id]?'…':on?'⚠ Varning':'OK')+'</span></div>'
+      +'<div class="card-value" style="color:'+(on?ind.color:'#e6edf3')+'">'+(S.loading[ind.id]?'…':ind.current)+(ind.unit?'<span style="font-size:15px;color:#484f58;font-weight:500"> '+ind.unit+'</span>':'')+'</div>'
+      +'<div class="card-desc">'+(ind.live?'<span class="live-dot"></span>':'')+'Varningsgräns: '+ind.threshold+(ind.unit?' '+ind.unit:'')+'</div>'
+      +'<div class="card-meter"><div class="card-meter-fill" style="width:'+pct+'%;background:'+ind.color+'"></div></div>'
+      +'<div class="card-explain">'+ind.goodBad+'</div></div>';
+  }).join('');
+
+  var conflHTML=KNOWN_CONFLICTS.map(c=>'<div class="conflict-card"><div class="conflict-header"><span class="conflict-flag">'+c.flag+'</span><span class="conflict-name">'+c.name+'</span><span class="conflict-intensity" style="background:'+c.intensity.bg+';color:'+c.intensity.color+'">'+c.intensity.label+'</span></div><div style="font-size:11px;color:#484f58;margin-top:2px">💀 Döda: '+c.deaths+' · Sedan '+c.started+'</div><div class="conflict-bar"><div class="conflict-bar-fill" style="width:'+c.pct+'%;background:'+c.intensity.color+'"></div></div></div>').join('');
+
+  var histHTML='<div class="timeline">'+HISTORY.map(ev=>{
+    var indHTML=ev.indicators.map(i=>'<span class="tl-ind" style="background:'+i.c+'22;color:'+i.c+'">'+i.label+'</span>').join('');
+    return '<div class="tl-event" style="border-color:'+ev.color+'30">'
+      +'<div style="position:absolute;left:-20px;top:18px;width:10px;height:10px;border-radius:50%;background:'+ev.color+';border:2px solid #0d1117"></div>'
+      +'<div class="tl-year" style="color:'+ev.color+'">'+ev.year+'</div>'
+      +'<div class="tl-title">'+ev.title+'</div>'
+      +'<div class="tl-desc">'+ev.desc+'</div>'
+      +'<div class="tl-indicators">'+indHTML+'</div>'
+      +'<div class="tl-lesson" style="background:'+ev.lc+'0a;border-left-color:'+ev.lc+'40">💡 '+ev.lesson+'</div>'
+    +'</div>';
+  }).join('')+'</div>';
+
+  document.getElementById('app').innerHTML=
+  '<div>'
+    +'<div class="topbar">'
+      +'<div class="logo"><div class="logo-dot" style="background:'+lv.color+'"></div>Krisvakt Sverige</div>'
+      +'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'
+        +(S.lastUpdated?'<span style="font-size:11px;color:#484f58">'+S.lastUpdated.toLocaleTimeString('sv-SE')+'</span>':'')
+        +'<button class="btn" id="toggleKey">⚙ FRED-nyckel</button>'
+        +'<button class="btn primary" id="refreshBtn">↻ Uppdatera</button>'
+      +'</div>'
+    +'</div>'
+    +(S.showKey?'<div class="keybar"><span style="font-size:11px;color:#8b949e">FRED-nyckel:</span><input class="keyinput" id="fredKeyInput" type="text" value="'+S.fredKey+'" placeholder="Gratis: fred.stlouisfed.org"/><button class="btn primary" id="activateFred" '+(S.fredKey?'':'disabled')+'>▶ Aktivera</button></div>':'')
+    +'<div class="wrap">'
+      +'<div class="biglight"><div class="biglight-glow" style="background:'+lv.color+'"></div><span class="light-emoji">'+lv.emoji+'</span><div class="light-label" style="color:'+lv.color+'">'+lv.label+'</div><div class="light-sub">'+(redCount>0?redCount+' av '+S.inds.length+' indikatorer visar varning':'Alla indikatorer inom normala nivåer')+'</div><div class="score-pill" style="color:'+lv.color+';background:'+lv.bg+';border-color:'+lv.border+'">Riskpoäng '+sc+'/100</div></div>'
+      +'<div class="advice fadein" style="background:'+lv.bg+';border-color:'+lv.border+'"><h3 style="color:'+lv.color+'">'+lv.emoji+' '+lv.advice.title+'</h3><ul>'+lv.advice.points.map(p=>'<li>'+p+'</li>').join('')+'</ul></div>'
+
+      // Tabs
+      +'<div style="display:flex;gap:8px;margin-top:28px;flex-wrap:wrap">'
+        +'<button class="btn'+(t==='indicators'?' primary':'')+'" data-tab="indicators">📊 Indikatorer</button>'
+        +'<button class="btn'+(t==='future'?' primary':'')+'" data-tab="future">🔮 Framtidsrisker</button>'
+        +'<button class="btn'+(t==='conflicts'?' primary':'')+'" data-tab="conflicts">⚔️ Aktiva konflikter</button>'
+        +'<button class="btn'+(t==='history'?' primary':'')+'" data-tab="history">📜 Historiska kriser</button>'
+      +'</div>'
+
+      // INDICATORS
+      +(t==='indicators'?'<div class="fadein"><div class="sec-title" style="margin-top:20px">Ekonomiska indikatorer</div><div class="cards">'+cardsHTML+'</div><div class="sec-title">🔍 Detaljvy</div><div class="detail"><h3 style="color:'+sel.color+'">'+sel.emoji+' '+sel.name+'</h3><div style="font-size:13px;color:#8b949e;line-height:1.6;margin-bottom:10px">'+sel.simple+'</div><div class="info-box" style="border-color:'+sel.color+'">💡 <strong style="color:'+sel.color+'">Hur tolkar jag det?</strong><br>'+sel.goodBad+'</div><div class="detail-stats"><div class="stat">Aktuellt: <span>'+sel.current+(sel.unit?' '+sel.unit:'')+'</span></div><div class="stat">Varningsgräns: <span>'+sel.threshold+(sel.unit?' '+sel.unit:'')+'</span></div><div class="stat">Status: <span style="color:'+(triggered(sel)?sel.color:'#3fb950')+'">'+(triggered(sel)?'⚠ Varning':'✓ OK')+'</span></div><div class="stat">Källa: <span>'+(sel.live?'<span style="color:#3fb950">● Live</span>':'Simulerad')+'</span></div></div><div class="chart-wrap">'+spark(sel.history,sel.color,sel.threshold)+'</div></div></div>':'')
+
+      // FUTURE RISKS
+      +(t==='future'?'<div class="fadein"><div class="sec-title" style="margin-top:20px">Framtidsrisker <span class="sec-badge" style="color:#bc8cff;border-color:#bc8cff30">v6.0 — Uppdaterad</span></div><div class="future-grid">'+doomsdayHTML()+vdemHTML()+'</div><div class="future-grid">'+milHTML()+'<div style="display:flex;flex-direction:column;gap:14px"></div></div><div class="future-grid">'+faoHTML()+'</div><div class="future-grid">'+whoHTML()+'</div><div class="future-grid">'+leadersHTML()+'</div><div class="future-grid">'+aiHTML()+'</div><div class="future-grid">'+electionHTML()+'</div></div>':'')
+
+      // CONFLICTS
+      +(t==='conflicts'?'<div class="fadein"><div class="sec-title" style="margin-top:20px">Aktiva väpnade konflikter (UCDP Uppsala)</div><div class="info-box" style="border-color:#58a6ff;margin-bottom:12px">⚡ <strong style="color:#c9d1d9">Varför krig påverkar din ekonomi:</strong> Ukrainakriget 2022 gav Sverige 10% inflation och snabba räntehöjningar som drabbade alla med bolån.</div><div class="conflict-grid">'+conflHTML+'</div><div style="font-size:10px;color:#21262d;margin-top:10px;text-align:right">Källa: UCDP Uppsala Universitet · ucdp.uu.se</div></div>':'')
+
+      // HISTORY
+      +(t==='history'?'<div class="fadein"><div class="sec-title" style="margin-top:20px">Historiska kriser — vad kan vi lära oss?</div><div style="font-size:12px;color:#484f58;margin-bottom:16px;line-height:1.6">Nu med FAO matpriser inlagda — se hur de föregick Arabiska våren och Ukrainakriget.</div>'+histHTML+'</div>':'')
+
+      +'<div class="footer">Krisvakt Sverige v6.0 · SCB · FRED (Fed St. Louis) · UCDP Uppsala · V-Dem GU · SIPRI Stockholm · FAO Food Price Index · WHO Global Health Security Index · Bulletin of Atomic Scientists · EJ finansiell rådgivning</div>'
+    +'</div>'
+  +'</div>';
+
+  // Events
+  document.getElementById('toggleKey').onclick=()=>{S.showKey=!S.showKey;render()};
+  document.getElementById('refreshBtn').onclick=()=>loadAll(S.fredKey);
+  var ki=document.getElementById('fredKeyInput');if(ki)ki.oninput=function(){S.fredKey=this.value;render()};
+  var af=document.getElementById('activateFred');if(af)af.onclick=()=>{S.showKey=false;loadAll(S.fredKey)};
+  document.querySelectorAll('.card[data-id]').forEach(el=>el.onclick=function(){S.selected=this.dataset.id;render()});
+  document.querySelectorAll('[data-tab]').forEach(el=>el.onclick=function(){S.activeTab=this.dataset.tab;render()});
+}
+
+// ─── Data loading ─────────────────────────────────────────────────────────────
+async function loadEconomic(key){
+  var ni=DEFS.map(d=>Object.assign({},d,{current:DEFVAL[d.id],live:false,history:FB[d.id]}));
+  function setI(id,p){var i=ni.findIndex(x=>x.id===id);if(i>=0)Object.assign(ni[i],p)}
+  S.loading=Object.assign({},S.loading,{household_debt:true});render();
+  try{var d=await fetchSCB();if(d.length)setI('household_debt',{current:d[d.length-1].value,live:true,history:d})}catch(e){}
+  S.loading=Object.assign({},S.loading,{household_debt:false});
+  if(key){
+    for(var def of DEFS.filter(d=>d.apiType==='fred'&&d.fredId)){
+      S.loading=Object.assign({},S.loading,{[def.id]:true});render();
+      try{var fd=await fetchFRED(def.fredId,key,60);if(fd.length)setI(def.id,{current:fd[fd.length-1].value,live:true,history:fd.slice(-24)})}catch(e){}
+      S.loading=Object.assign({},S.loading,{[def.id]:false});
+    }
+  }
+  S.inds=ni;S.lastUpdated=new Date();
+}
+async function loadConflicts(){
+  try{var d=await fetchUCDP();S.conflicts=d;}catch(e){S.conflicts=[];}
+  S.conflictsLoading=false;render();
+}
+async function loadFAO(){
+  try{
+    // Try to fetch FAO GIEWS food price data
+    var r=await fetch('https://fpma.fao.org/giews/fpmat4/api/v1/indices?type=nominal');
+    if(r.ok){
+      var d=await r.json();
+      // Parse latest value if available
+      if(d&&d.length>0){
+        var latest=d[d.length-1];
+        if(latest&&latest.value) S.faoLatest=Math.round(latest.value);
+        S.faoLive=true;
+      }
+    }
+  }catch(e){/* use static data */}
+  render();
+}
+async function loadAll(key){
+  document.getElementById('loadbar').style.display='block';
+  await Promise.all([loadEconomic(key),loadConflicts(),loadFAO()]);
+  document.getElementById('loadbar').style.display='none';
+  render();
+}
+
+render();
+loadAll(S.fredKey);
+</script>
+</body>
+</html>
